@@ -41,7 +41,7 @@ async function processor(sql) {
     return;
   }
   const result = await query(sql);
-  if (Array.isArray(result)) {
+  if (Array.isArray(result) && result.length > 0) {
     const [firstRow] = result;
     if (typeof firstRow === 'object') {
       const keys = Object.keys(firstRow);
