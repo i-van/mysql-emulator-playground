@@ -35,34 +35,43 @@ const drawTable = (data) => table(data, {
     joinJoin: `┼`,
   },
 });
+const isObject = (o) => o !== null && typeof o === 'object' && !Array.isArray(o);
+const formatOutput = (output) => {
+  if (Array.isArray(output) && output.length > 0) {
+    const [firstRow] = output;
+    if (isObject(firstRow)) {
+      const keys = Object.keys(firstRow);
+      if (keys.length > 0) {
+        const data = output.reduce((res, row) => [
+          ...res,
+          keys.map((k) => row[k]),
+        ], [keys]);
+        return drawTable(data);
+      }
+    } else {
+      const data = output.map((row) => [row]);
+      return drawTable(data);
+    }
+  } else if (isObject(output)) {
+    const keys = Object.keys(output);
+    if (keys.length > 0) {
+      const data = keys.reduce((res, key) => [
+        ...res,
+        [key, output[key]],
+      ], []);
+      return drawTable(data);
+    }
+  }
+
+  return JSON.stringify(output);
+};
 
 async function processor(sql) {
   if (!sql) {
     return;
   }
   const result = await query(sql);
-  if (Array.isArray(result) && result.length > 0) {
-    const [firstRow] = result;
-    if (typeof firstRow === 'object') {
-      const keys = Object.keys(firstRow);
-      const data = result.reduce((res, row) => [
-        ...res,
-        keys.map((k) => row[k]),
-      ], [keys]);
-      this.echo(drawTable(data));
-    } else {
-      const data = result.map((row) => [row]);
-      this.echo(drawTable(data));
-    }
-  } else if (typeof result === 'object') {
-    const data = Object.keys(result).reduce((res, key) => [
-      ...res,
-      [key, result[key]],
-    ], []);
-    this.echo(drawTable(data));
-  } else {
-    this.echo(JSON.stringify(result));
-  }
+  this.echo(formatOutput(result));
 }
 
 const initialSql = `
