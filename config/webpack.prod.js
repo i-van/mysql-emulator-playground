@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const HtmlWebpackPartialsPlugin = require('html-webpack-partials-plugin')
 const { merge } = require('webpack-merge')
 
 const paths = require('./paths')
@@ -10,7 +11,7 @@ module.exports = merge(common, {
   devtool: false,
   output: {
     path: paths.build,
-    publicPath: '/',
+    publicPath: '/mysql-emulator',
     filename: 'js/[name].[contenthash].bundle.js',
   },
   module: {
@@ -38,6 +39,10 @@ module.exports = merge(common, {
     new MiniCssExtractPlugin({
       filename: 'styles/[name].[contenthash].css',
       chunkFilename: '[id].css',
+    }),
+    new HtmlWebpackPartialsPlugin({
+      path: paths.src + '/ga.html',
+      location: 'body',
     }),
   ],
   optimization: {
