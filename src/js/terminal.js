@@ -70,8 +70,17 @@ async function processor(sql) {
   if (!sql) {
     return;
   }
-  const result = await query(sql);
-  this.echo(formatOutput(result));
+  try {
+    const result = await query(sql);
+    this.echo(formatOutput(result));
+    window.gtag && window.gtag('event', 'query', { sql });
+  } catch (err) {
+    this.error(err);
+    window.gtag && window.gtag('event', 'exception', {
+      description: `${err.message}; ${sql}`,
+      fatal: false,
+    });
+  }
 }
 
 const initialSql = `
