@@ -41,7 +41,7 @@
   "dependencies": {
     "jquery": "3.7.0",
     "jquery.terminal": "2.36.0",
-    "mysql-emulator": "0.0.18",
+    "mysql-emulator": "0.0.19",
     "table": "6.8.1"
   }
 }
