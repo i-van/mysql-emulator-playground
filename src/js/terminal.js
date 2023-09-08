@@ -74,11 +74,16 @@ async function processor(sql) {
     const result = await query(sql);
     this.echo(formatOutput(result));
     window.gtag && window.gtag('event', 'query', { sql });
+    window.mixpanel && window.mixpanel.track('query', { sql });
   } catch (err) {
     this.error(err);
     window.gtag && window.gtag('event', 'exception', {
       description: `${err.message}; ${sql}`,
       fatal: false,
+    });
+    window.mixpanel && window.mixpanel.track('exception', {
+      message: err.message,
+      sql,
     });
   }
 }

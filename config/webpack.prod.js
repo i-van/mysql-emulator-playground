@@ -41,7 +41,7 @@ module.exports = merge(common, {
       chunkFilename: '[id].css',
     }),
     new HtmlWebpackPartialsPlugin({
-      path: paths.src + '/ga.html',
+      path: paths.src + '/analytics.html',
       location: 'body',
     }),
   ],
