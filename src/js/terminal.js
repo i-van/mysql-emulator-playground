@@ -6,6 +6,7 @@ import 'jquery.terminal/css/jquery.terminal.min.css';
 
 import { greetings } from './greetings';
 import reservedWords from './reserved-words.json';
+import { enableTracking, trackException, trackQuery } from '@/js/tracker';
 
 const keywords = new Set([
   ...reservedWords,
@@ -73,18 +74,10 @@ async function processor(sql) {
   try {
     const result = await query(sql);
     this.echo(formatOutput(result));
-    window.gtag && window.gtag('event', 'query', { sql });
-    window.mixpanel && window.mixpanel.track('query', { sql });
+    trackQuery(sql);
   } catch (err) {
     this.error(err);
-    window.gtag && window.gtag('event', 'exception', {
-      description: `${err.message}; ${sql}`,
-      fatal: false,
-    });
-    window.mixpanel && window.mixpanel.track('exception', {
-      message: err.message,
-      sql,
-    });
+    trackException(err, sql);
   }
 }
 
@@ -116,7 +109,8 @@ export const mountTerminal = async (selector) => {
     greetings,
     name: 'mysql-emulator',
     prompt: 'mysql> ',
-    onInit: t => t.echo(initialSql),
+    onInit: t => t.echo(initialSql.trim()),
   });
-  t.exec(`SELECT u.*, sum(if(p.id, 1, 0)) post_count FROM users u LEFT JOIN posts p ON u.id = p.user_id GROUP BY u.id`);
+  t.exec(`SELECT u.*, sum(if(p.id, 1, 0)) post_count FROM users u LEFT JOIN posts p ON u.id = p.user_id GROUP BY u.id`)
+    .then(enableTracking);
 };
