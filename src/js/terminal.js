@@ -94,7 +94,15 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
-INSERT INTO users VALUES (DEFAULT, 'John'), (DEFAULT, 'Jane');
+CREATE TABLE posts (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id INT UNSIGNED NOT NULL,
+  description TEXT NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT FOREIGN KEY (\`user_id\`) REFERENCES \`users\` (\`id\`)
+);
+INSERT INTO users VALUES (1, 'John'), (2, 'Jane');
+INSERT INTO posts VALUES (DEFAULT, 1, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
 `;
 export const mountTerminal = async (selector) => {
   for (const sql of initialSql.split(';')) {
@@ -104,10 +112,11 @@ export const mountTerminal = async (selector) => {
     }
   }
 
-  $(selector).terminal(processor, {
+  const t = $(selector).terminal(processor, {
     greetings,
     name: 'mysql-emulator',
     prompt: 'mysql> ',
     onInit: t => t.echo(initialSql),
   });
+  t.exec(`SELECT u.*, sum(if(p.id, 1, 0)) post_count FROM users u LEFT JOIN posts p ON u.id = p.user_id GROUP BY u.id`);
 };
