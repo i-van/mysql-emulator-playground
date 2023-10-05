@@ -1,6 +1,7 @@
 import { table } from 'table';
 import { query } from 'mysql-emulator';
 import $ from 'jquery';
+import packageJson from 'mysql-emulator/package.json';
 import 'jquery.terminal';
 import 'jquery.terminal/css/jquery.terminal.min.css';
 
@@ -110,6 +111,13 @@ export const mountTerminal = async (selector) => {
     name: 'mysql-emulator',
     prompt: 'mysql> ',
     onInit: t => t.echo(initialSql.trim()),
+  });
+  $('.terminal-output [data-index="0"]').find('span').each((i, span) => {
+    const html = $(span).html();
+    if (html.includes('{{version}}')) {
+      const link = `<a href="${packageJson.repository}" target="_blank">v${packageJson.version}</a>`;
+      $(span).html(html.replace('{{version}}', link));
+    }
   });
   t.exec(`SELECT u.*, sum(if(p.id, 1, 0)) post_count FROM users u LEFT JOIN posts p ON u.id = p.user_id GROUP BY u.id`)
     .then(enableTracking);

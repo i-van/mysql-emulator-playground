@@ -1,5 +1,3 @@
-import packageJson from 'mysql-emulator/package.json';
-
 export const greetings = `
  __  __        _____  ____  _      ______                 _       _
 |  \\/  |      / ____|/ __ \\| |    |  ____|               | |     | |
@@ -8,5 +6,5 @@ export const greetings = `
 | |  | | |_| |____) | |__| | |____| |____| | | | | | |_| | | (_| | || (_) | |
 |_|  |_|\\__, |_____/ \\___\\_\\______|______|_| |_| |_|\\__,_|_|\\__,_|\\__\\___/|_|
          __/ |
-        |___/                                                          v${packageJson.version}
+        |___/                                                          {{version}}
 `;
